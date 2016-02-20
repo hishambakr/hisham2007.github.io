@@ -1,0 +1,149 @@
+<!--
+Copyright (C) 2014 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+ 
+    <title>تابع</title>
+  </head>
+  <body>
+	
+	
+	 <!-- Whole Details Div -->
+    <div style="margin-left:5%; margin-right:5%;">
+     <br />
+    	<table border="0" cellpadding="10">
+        	<tr>
+            	<td>
+                	<div style="color:#666; font-size:16px;"id="txtSince">
+                    	توقيت الخبر                   </div>
+                </td>
+                <td width="100%">
+                	<div id="txtChannel" style="color:#93F; font-size:21px; text-align:right; margin-right:5px;" align="right">
+						اسم المصدر                  </div>
+                </td>
+                <td>
+                	<img alt="صورة المصدر" width="48" height="48" align="right" id="imgChannel"/>
+                </td>
+          	</tr>
+        </table>
+        
+       
+        
+        <!-- Title -->
+        <div style="color:#93F; font-size:26px; margin-right:5px;" align="right" id="txtTitle"><b>
+        	عنوان الخبر         </b></div>
+        
+       
+
+            <center>
+      	<!--  <img id="imgDetails" alt="صورة الخبر" style="margin-left: auto; margin-right: auto;" /> -->
+        </center>
+        
+    	
+	<center>
+</center>
+
+
+        
+    <div style="color:#666; font-size:24px; text-align:right;" align="right" id="txtDetails">
+        تفاصيل الخبر
+ 
+    </div>
+	
+	<!-- <center><input type ="button" value="test" onClick="displayText('hisham')"/></center> -->
+	
+	
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <script type="text/javascript">
+    
+    
+    
+      window.onload = function() {
+        cast.receiver.logger.setLevelValue(0);
+        window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+        console.log('Starting Receiver Manager');
+        
+        // handler for the 'ready' event
+        castReceiverManager.onReady = function(event) {
+          console.log('Received Ready event: ' + JSON.stringify(event.data));
+          window.castReceiverManager.setApplicationState("Application status is ready...");
+        };
+        
+        // handler for 'senderconnected' event
+        castReceiverManager.onSenderConnected = function(event) {
+          console.log('Received Sender Connected event: ' + event.data);
+          console.log(window.castReceiverManager.getSender(event.data).userAgent);
+        };
+        
+        // handler for 'senderdisconnected' event
+        castReceiverManager.onSenderDisconnected = function(event) {
+          console.log('Received Sender Disconnected event: ' + event.data);
+          if (window.castReceiverManager.getSenders().length == 0) {
+	        window.close();
+	      }
+        };
+        
+        // handler for 'systemvolumechanged' event
+        castReceiverManager.onSystemVolumeChanged = function(event) {
+          console.log('Received System Volume Changed event: ' + event.data['level'] + ' ' +
+              event.data['muted']);
+        };
+
+        // create a CastMessageBus to handle messages for a custom namespace
+        window.messageBus =
+          window.castReceiverManager.getCastMessageBus(
+              'urn:x-cast:com.tabe3.news.cast');
+
+        // handler for the CastMessageBus message event
+        window.messageBus.onMessage = function(event) {
+          console.log('Message [' + event.senderId + ']: ' + event.data);
+          // display the message from the sender
+          displayText(event.data);
+          // inform all senders on the CastMessageBus of the incoming message event
+          // sender message listener will be invoked
+          window.messageBus.send(event.senderId, event.data);
+        }
+
+        // initialize the CastReceiverManager with an application status message
+        window.castReceiverManager.start({statusText: "Application is starting"});
+        console.log('Receiver Manager started');
+      };
+      
+      // utility function to display the text message in the input field
+      function displayText(text) {
+        ///console.log(text);
+       /// var a = '{"txtTitle":"txtTitle","txtChannel":"txtChannel","txtDetails":"txtDetails","txtSince":"txtSince","imgDetails":"http://onaeg.com/wp-content/uploads/2015/09/%D8%A7%D9%84%D8%B3%D9%8A%D8%B3%D9%893-300x214.jpg","imgChannel":"https://pbs.twimg.com/profile_images/659750219630923780/lIIsHEuQ_bigger.jpg"}';
+         var data = JSON.parse(text);
+         
+         
+         
+        // var json = '{"result":true,"count":1}';
+        //var obj = JSON.parse(json); 
+        document.getElementById("txtTitle").innerHTML=data.txtTitle;
+         document.getElementById("txtChannel").innerHTML=data.txtChannel;
+          document.getElementById("txtDetails").innerHTML=data.txtDetails;
+          document.getElementById("txtSince").innerHTML=data.txtSince;
+         ///  document.getElementById("imgDetails").src=data.imgDetails;
+           document.getElementById("imgChannel").src=data.imgChannel;
+           
+        window.castReceiverManager.setApplicationState(text);
+      };
+    </script>
+  </body>
+</html>
